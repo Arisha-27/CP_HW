@@ -1,0 +1,25 @@
+vector<int> search(string& pat, string& txt) {
+        vector<int>ans;
+        
+        int n=txt.size(),m=pat.size();
+        long long sum=0,target=0,power=1;
+        const int mod = 1e9 + 7;
+        int base=26;
+        
+        for(int i=0;i<m;i++){
+            target=(target*26+(pat[i]-'a'))%mod;
+            sum=(sum*26+(txt[i]-'a'))%mod;
+            if (i < m - 1) power=(power*base)%mod;
+        }
+        
+        for(int i=m;i<=n;i++){
+            if(sum==target){
+                ans.push_back(i-m);
+            }
+            if (i < n) {
+                sum = (sum - (txt[i - m] - 'a') * power%mod+mod)%mod;
+                sum = (sum * base + (txt[i] - 'a'))%mod;
+            }
+        }
+        return ans;
+    }
