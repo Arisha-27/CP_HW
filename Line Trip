@@ -1,0 +1,28 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+	int t;
+	cin>>t;
+	while(t--){
+	    int n,k;
+	    cin>>n>>k;
+	    vector<int>arr(n);
+	    
+	    for(int i=0;i<n;i++){
+	        cin>>arr[i];
+	    }
+	    arr.push_back(0);
+	    arr.push_back(k);
+	    
+	    sort(arr.begin(),arr.end());
+	    int max_dis=0;
+	    
+	    for(int i=0;i<n+1;i++){
+	        int dis=arr[i+1]-arr[i];
+	        if(max_dis<dis) max_dis=dis;
+	    }
+	    int turn=2*(arr[n+1]-arr[n]);
+	    cout<<max(max_dis,turn)<<endl;
+	}
+}
