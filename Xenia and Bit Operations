@@ -1,0 +1,55 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+
+void build(int ind,int arr[],int low,int high,int seg[],int orr){
+    if(low==high){
+        seg[ind]=arr[low];
+        return;
+    }
+    int mid=(low+high)/2;
+    build(2*ind+1,arr,low,mid,seg,!orr);
+    build(2*ind+2,arr,mid+1,high,seg,!orr);
+    
+    if(orr) seg[ind]=seg[2*ind+1] | seg[2*ind+2];
+    else seg[ind]=seg[2*ind+1] ^ seg[2*ind+2];
+}
+
+void update(int ind,int val,int low,int high,int i,int seg[],int orr){
+    if(low==high){
+        seg[ind]=val;
+        return;
+    }
+    int mid=(low+high)/2;
+    if(i<=mid) update(2*ind+1,val,low,mid,i,seg,!orr);
+    else update(2*ind+2,val,mid+1,high,i,seg,!orr);
+    
+    if(orr) seg[ind]=seg[2*ind+1] | seg[2*ind+2];
+    else seg[ind]=seg[2*ind+1] ^ seg[2*ind+2];
+}
+
+
+void solve(){
+    int m,q;
+    cin>>m>>q;
+    int n=pow(2,m);
+    int arr[n];
+    for(int i=0;i<n;i++) cin>>arr[i];
+    
+    int seg[4*n];
+    if(m%2==0) build(0,arr,0,n-1,seg,0);
+    else build(0,arr,0,n-1,seg,1);
+    while(q--){
+        int i,val;
+        cin>>i>>val;
+        i--;
+        if(m%2==0) update(0,val,0,n-1,i,seg,0);
+        else update(0,val,0,n-1,i,seg,1);
+        
+        cout<<seg[0]<<endl;
+    }
+}
+
+int main() {
+	solve();
+}
