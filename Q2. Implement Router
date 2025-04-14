@@ -1,0 +1,60 @@
+class Router {
+    int memoryLimit;
+    queue<tuple<int,int,int>> packetQ;
+    unordered_set<string>packetSet;
+    unordered_map<int,vector<int>>desTimestamp;
+
+    string makeKey(int src,int dest,int timestamp){
+        return to_string(src)+"#"+to_string(dest)+"#"+to_string(timestamp);
+    }
+public:
+    Router(int memoryLimit) {
+        this->memoryLimit=memoryLimit;
+    }
+    
+    bool addPacket(int source, int destination, int timestamp) {
+        string key=makeKey(source,destination,timestamp);
+        if(packetSet.count(key)) return false;
+
+        if(packetQ.size()==memoryLimit){
+            auto [src,dest,time]=packetQ.front();
+            packetQ.pop();
+            string oldKey=makeKey(src,dest,time);
+            packetSet.erase(oldKey);
+
+            auto &timestamp=desTimestamp[dest];
+            auto it=lower_bound(timestamp.begin(),timestamp.end(),time);
+            if(it != timestamp.end() && *it ==time){
+                timestamp.erase(it);
+            }
+        }
+        packetQ.push({source,destination,timestamp});
+        packetSet.insert(key);
+        desTimestamp[destination].push_back(timestamp);
+        return true;
+    }
+    
+    vector<int> forwardPacket() {
+        if(packetQ.empty()) return {};
+
+        auto [src,dest,time]=packetQ.front();
+        packetQ.pop();
+        string oldKey=makeKey(src,dest,time);
+        packetSet.erase(oldKey);
+        
+        auto &timestamp=desTimestamp[dest];
+        auto it=lower_bound(timestamp.begin(),timestamp.end(),time);
+        if(it != timestamp.end() && *it ==time){
+            timestamp.erase(it);
+        }
+        return {src,dest,time};
+    }
+    
+    int getCount(int destination, int startTime, int endTime) {
+        auto &timestamp=desTimestamp[destination];
+        auto low=lower_bound(timestamp.begin(),timestamp.end(),startTime);
+        auto high=upper_bound(timestamp.begin(),timestamp.end(),endTime);
+        return distance(low,high);
+    }
+};
+
